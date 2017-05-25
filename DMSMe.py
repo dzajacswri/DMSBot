@@ -7,10 +7,10 @@ import random
 import json
 import sys
 import traceback
-import io
+from io import BytesIO
+from os import environ
+from keys import keys
 
-keys = dict()
-#keys[roomid] = "privatekeywithfileshare"
 
 class Sign(object):
     def __init__(self, path, size, coords, font, fontSize, pad):
@@ -114,7 +114,7 @@ def post(hex_data, type):
 
 
 def postImage(imagePath):
-    output = io.BytesIO()
+    output = BytesIO()
     image.save(output, format='JPEG')
     hex_data = output.getvalue()
     post(hex_data, 'JPEG')
@@ -130,22 +130,22 @@ def createGif(images):
     import imageio
     ioImages = []
     for img in images:
-        buff = io.BytesIO()
+        buff = BytesIO()
         img.save(buff, format='gif')
         hex_data = buff.getvalue()
         ioImages.append(imageio.imread(hex_data))
 
-    out = io.BytesIO()
+    out = BytesIO()
     imageio.mimwrite(out, ioImages, format='gif', fps=0.75)
     hex_data = out.getvalue()
     post(hex_data,'gif')
 
-testString = '{"event": "room_message", "item": {"message": {"date": "2017-05-06T16:37:20.492531+00:00", "from": {"id": 186, "links": {"self": "https://hipchat.datasys.swri.edu/v2/user/186"}, "mention_name": "ZajacDan", "name": "Zajac, Daniel A.", "version": "YEG9Y3RO"}, "id": "95df1add-77b1-4b17-b843-5e987cd25ea9", "mentions": [], "message": "/dmsme 0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]", "type": "message"}, "room": {"id": 96, "is_archived": false, "links": {"members": "https://hipchat.datasys.swri.edu/v2/room/96/member", "participants": "https://hipchat.datasys.swri.edu/v2/room/96/participant", "self": "https://hipchat.datasys.swri.edu/v2/room/96", "webhooks": "https://hipchat.datasys.swri.edu/v2/room/96/webhook"}, "name": "testroom", "privacy": "private", "version": "BTOFTL1R"}}, "oauth_client_id": "1cfc5620-289d-4104-bc0a-304bf15e8591", "webhook_id": 152}'
+testString = '{"event": "room_message", "item": {"message": {"date": "2017-05-06T16:37:20.492531+00:00", "from": {"id": 186, "links": {"self": "6"}, "mention_name": "n", "name": ".", "version": "YEG9Y3RO"}, "id": "9", "mentions": [], "message": "/dmsme 0[np]1[np]2", "type": "message"}, "room": {"id": 96, "is_archived": false, "links": {"members": "", "participants": "", "self": "", "webhooks": ""}, "name": "testroom", "privacy": "private", "version": "BTOFTL1R"}}, "oauth_client_id": "1", "webhook_id": 152}'
 
-if __name__ == "__main__":
-	data = testString
-else:
+if 'REQUEST_METHOD' in environ :
 	data = sys.stdin.read()
+else:
+	data = testString
 dataJ = json.loads(data)
 
 room = int(dataJ[u'item'][u'room'][u'id'])
