@@ -10,7 +10,7 @@ import traceback
 import io
 
 keys = dict()
-
+#keys[roomid] = "privatekeywithfileshare"
 
 class Sign(object):
     def __init__(self, path, size, coords, font, fontSize, pad):
@@ -114,7 +114,7 @@ def post(hex_data, type):
     prep = req.prepare()
     prep.headers['Content-Type'] = prep.headers['Content-Type'].replace('form-data','related')
     resp = s.send(prep)
-    # pprint(resp.json())
+    sendToRoom('Response:' + str(resp.status_code) + ' h:' + str(len(resp.history)), 96, keys[96])
     s.close()
 
 
@@ -138,9 +138,9 @@ def createGif(images):
     for img in images:
         buff = io.BytesIO()
         # resize huge images
-        if (img.size[0] > 500):
-            size = (500,img.size[1]*500/img.size[0])
-            img.thumbnail(size, Image.ANTIALIAS)
+        #if (img.size[0] > 500):
+        #    size = (500,img.size[1]*500/img.size[0])
+        #    img.thumbnail(size, Image.ANTIALIAS)
         img.save(buff, format='gif')
         hex_data = buff.getvalue()
         ioImages.append(imageio.imread(hex_data))
@@ -150,10 +150,12 @@ def createGif(images):
     hex_data = out.getvalue()
     post(hex_data,'gif')
 
-testString = '{"event": "room_message", "item": {"message": {"date": "2017-05-06T16:37:20.492531+00:00", "from": {"id": 186, "links": {"self": "https://hipchat.datasys.swri.edu/v2/user/186"}, "mention_name": "ZajacDan", "name": "Zajac, Daniel A.", "version": "YEG9Y3RO"}, "id": "95df1add-77b1-4b17-b843-5e987cd25ea9", "mentions": [], "message": "/dmsme TEST TEST TEST[NP]2ND PHASE", "type": "message"}, "room": {"id": 96, "is_archived": false, "links": {"members": "https://hipchat.datasys.swri.edu/v2/room/96/member", "participants": "https://hipchat.datasys.swri.edu/v2/room/96/participant", "self": "https://hipchat.datasys.swri.edu/v2/room/96", "webhooks": "https://hipchat.datasys.swri.edu/v2/room/96/webhook"}, "name": "testroom", "privacy": "private", "version": "BTOFTL1R"}}, "oauth_client_id": "1cfc5620-289d-4104-bc0a-304bf15e8591", "webhook_id": 152}'
+testString = '{"event": "room_message", "item": {"message": {"date": "2017-05-06T16:37:20.492531+00:00", "from": {"id": 186, "links": {"self": "https://hipchat.datasys.swri.edu/v2/user/186"}, "mention_name": "ZajacDan", "name": "Zajac, Daniel A.", "version": "YEG9Y3RO"}, "id": "95df1add-77b1-4b17-b843-5e987cd25ea9", "mentions": [], "message": "/dmsme 0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]0[np]1[np]2[np]3[np]4[np]5[np]6[np]7[np]8[np]9[np]", "type": "message"}, "room": {"id": 96, "is_archived": false, "links": {"members": "https://hipchat.datasys.swri.edu/v2/room/96/member", "participants": "https://hipchat.datasys.swri.edu/v2/room/96/participant", "self": "https://hipchat.datasys.swri.edu/v2/room/96", "webhooks": "https://hipchat.datasys.swri.edu/v2/room/96/webhook"}, "name": "testroom", "privacy": "private", "version": "BTOFTL1R"}}, "oauth_client_id": "1cfc5620-289d-4104-bc0a-304bf15e8591", "webhook_id": 152}'
 
-#data = testString #sys.stdin.read()
-data = sys.stdin.read()
+if __name__ == "__main__":
+	data = testString
+else:
+	data = sys.stdin.read()
 dataJ = json.loads(data)
 
 room = int(dataJ[u'item'][u'room'][u'id'])
@@ -181,10 +183,11 @@ try:
 
     if '[NP]' in multi.upper():
         images = list()
-        for phase in multi.upper().split('[NP]'):
+        for phase in multi.upper().split('[NP]')[:10]:
             multiImg = createText(phase, sign)
             image = createSign(multiImg, sign)
-            images.append(image)
+            image.thumbnail((500, image.size[1]*500/image.size[0]), Image.ANTIALIAS)
+	    images.append(image)
         createGif(images)
 
     else:
