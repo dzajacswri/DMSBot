@@ -73,7 +73,6 @@ def createText(multi, sign):
     multi = multi.split("[NL]")
     multi = multi[:sign.size[0]]
 
-
     size = (sign.coords[1][0]-sign.coords[0][0],abs(sign.coords[2][1]-sign.coords[1][1]))
     textImg = Image.new("RGBA",size)
     textd = ImageDraw.Draw(textImg)
@@ -86,12 +85,10 @@ def createText(multi, sign):
             textd.text(((MAX_W - w) / 2, current_h), line, (255,76,0),font=sign.font)
             current_h += h + pad
 
-    # textImg.show()
     return textImg
 
 
 def createSign(multiImg, sign):
-
     size = multiImg.size
 
     # transform the text
@@ -106,7 +103,6 @@ def createSign(multiImg, sign):
 def post(hex_data, type):
     url = "https://hipchat.datasys.swri.edu/v2/room/" + str(room) + "/share/file?auth_token=" + token
 
-    # curl -X POST -H "Content-Type: multipart/related" -F "file=@9.jpg"
     files = {'file': ('out.'+type, hex_data, 'image/'+type)}
 
     s = requests.Session()
@@ -114,7 +110,6 @@ def post(hex_data, type):
     prep = req.prepare()
     prep.headers['Content-Type'] = prep.headers['Content-Type'].replace('form-data','related')
     resp = s.send(prep)
-    sendToRoom('Response:' + str(resp.status_code) + ' h:' + str(len(resp.history)), 96, keys[96])
     s.close()
 
 
@@ -122,7 +117,6 @@ def postImage(imagePath):
     output = io.BytesIO()
     image.save(output, format='JPEG')
     hex_data = output.getvalue()
-
     post(hex_data, 'JPEG')
 
 
@@ -137,10 +131,6 @@ def createGif(images):
     ioImages = []
     for img in images:
         buff = io.BytesIO()
-        # resize huge images
-        #if (img.size[0] > 500):
-        #    size = (500,img.size[1]*500/img.size[0])
-        #    img.thumbnail(size, Image.ANTIALIAS)
         img.save(buff, format='gif')
         hex_data = buff.getvalue()
         ioImages.append(imageio.imread(hex_data))
@@ -164,8 +154,6 @@ if not keys.has_key(room):
 
 token = keys[room]
 try:
-
-
     message = "useage: /dmsme multi string[nl]next line"
     messages =  dataJ[u'item'][u"message"][u'message'].split(' ',1)
     if len(messages) == 1:
